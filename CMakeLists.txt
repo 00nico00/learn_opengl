@@ -7,6 +7,7 @@ include_directories(./include)
 
 set(SOURCES
         main.cpp
+        include/logger.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
