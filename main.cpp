@@ -104,20 +104,30 @@ int main() {
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-    std::array<float, 9> vertices {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+    std::array<float, 12> vertices {
+        0.5f, 0.5f, 0.0f,   // right-up
+        0.5f, -0.5f, 0.0f,  // right-bottom
+        -0.5f, -0.5f, 0.0f, // left-bottom
+        -0.5, 0.5f, 0.0f    // left-up
+    };
+
+    std::array<uint32_t, 6> indices {
+        0, 1, 3,
+        1, 2, 3
     };
 
     // 顶点缓冲对象 vertex buffer object
-    uint32_t VBO{}, VAO{};
+    uint32_t VBO{}, VAO{}, EBO{};
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices.data(), GL_STATIC_DRAW);
 
     // 解析缓冲顶点
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -136,7 +146,7 @@ int main() {
         // draw the triangle
         glUseProgram(shader_program);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -144,6 +154,7 @@ int main() {
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shader_program);
 
     glfwTerminate();
